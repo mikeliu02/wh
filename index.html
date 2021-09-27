@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-scale.v2.min.js"></script>
+    <script src="https://d3js.org/d3-axis.v1.min.js"></script>
+</head>
+<body>
+    <div id="scale"></div>
+    <script>
+        const width = 400
+        const height = 300
+        const rectWidth = 20
+        const data = [4, 8, 15, 16, 32, 42]
+        const padding = {bottom: 20}
+        const svg = d3.select("#scale").append('svg')
+            .attr("viewBox", [0, 0, width, height])
+            .attr("width", "600")
+            .attr("height", "500")
+        let max = d3.max(data)
+        let y = d3.scaleLinear().domain([0, max]).range([0, 200])
+        let colors = d3.interpolateRgb(
+            d3.rgb('#d6e685'),
+            d3.rgb('#1e6823'))
+                
+        svg.selectAll('rect')
+        .data(data)
+        .enter().append("rect")
+        .attr("x", function(d, i){
+            return (i + 1) * rectWidth
+        })
+        .attr("y", function(d, i){
+            return height - y(d) - padding.bottom
+        })
+        .attr("width", rectWidth - 2)
+        .attr("height", function(d, i){
+            return y(d)
+        })
+        .attr("fill", function(d,i){
+            return colors(d/max)
+        })
+
+        const circleData = [{
+            label: "7am",
+            sales: 20
+            },{
+            label: "8am",
+            sales: 12
+            }, {
+            label: "9am",
+            sales: 8
+            }, {
+            label: "10am",
+            sales: 27
+            }]
+        let circle_g = svg.append('g')
+        circle_g = circle_g.selectAll('g').data(circleData)
+        .enter().append('g')
+        circle_g.append("circle")
+        .attr("cy", 50)
+        .attr("cx", function(d, i){
+            return (i + 1) * 50
+        })
+        .attr("r", function(d,i){
+            return d.sales
+        })
+        .attr("fill", "#4A988A")
+                
+        circle_g.append("text")
+        .attr("y", 90)
+        .attr("x", function(d, i){
+            return (i + 1) * 50
+        })
+        .attr('font-size', 12)
+        .text(function(d,i){
+            return d.label
+        })
+
+        const lineData = [{ x: 0, y: 30 },
+            { x: 50, y: 20 },
+            { x: 100, y: 40 },
+            { x: 150, y: 80 },
+            { x: 200, y: 95 }]
+        let line = d3.line().x((d)=>d.x).y((d)=>d.y).curve(d3.curveCardinal)
+        let line_g = svg.append('g')
+        line_g.append("path")
+        .attr("stroke-width", 2)
+        .attr("stroke", "#00ff00")
+        .attr("fill", "none")
+        .attr("d", line(lineData))
+    </script>
+
+    <style>
+        #scale{
+            margin: 40px;
+            padding: 40px;
+        }
+    </style>
+</body>
+</html>
