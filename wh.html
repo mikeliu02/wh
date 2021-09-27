@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-scale.v2.min.js"></script>
+    <script src="https://d3js.org/d3-axis.v1.min.js"></script>
+</head>
+<body>
+    <div id="scale"></div>
+    <script>
+        const deviceData = {
+            bed: {w: 40, l: 400, h: 30, depth: 10, color: "rgb(30, 104, 35)"},
+            chucks: [{innerRadius: 10, outerRadius: 40, color: "rgb(66, 136, 181)", x: 20, y: 0, refAxis: "y"},
+            {innerRadius: 30, outerRadius: 40, color: "rgb(66, 136, 181)", x: 320, y: 0}],
+            cutHead: {color: "rgb(209, 60, 75)", x: 190, y: -50, w: 15, h: 35, fh: 1},
+            pipes: [{x: -120, y: 0, w: 15, h: 60, color: "rgb(254, 206, 126)", area: {min: 20, max: 60}},
+            {x: -30, y: 0, w: 15, h: 60, color: "rgb(254, 206, 126)", area: {min: 110, max: 150}},
+            {x: 60, y: 0, w: 15, h: 60, color: "rgb(254, 206, 126)", area: {min: 200, max: 240}}]
+        }
+
+        // 坐标 defineProperty
+        let POS = {x:0}
+        let _pos = {x: 0, y: 0, z: 0, b: 0}
+        Object.defineProperty(POS, "y", {
+            get: function(){
+                return _pos.y
+            },
+            set: function(_v){
+                _pos.y = _v
+                CHUCK_DEVICE_FACTORY(deviceData.chucks)
+                BED_DEVICE_FACTORY(deviceData.bed)
+                PIPE_DEVICE_FACTORY(deviceData.pipes)
+            }
+        })
+        Object.defineProperty(POS, "z", {
+            get: function(){
+                return _pos.z
+            },
+            set: function(_v){
+                _pos.z = _v
+                CUTHEAD_DEVICE_FACTORY(deviceData.cutHead)
+            }
+        })
+        Object.defineProperty(POS, "b", {
+            get: function(){
+                return _pos.b
+            },
+            set: function(_v){
+                _pos.b = _v
+                BED_DEVICE_FACTORY(deviceData.bed)
+            }
+        })
+                
+        var width = 800,
+            height = 400,
+            radius = Math.min(width, height) / 1.9,
+            spacing = .09;
+
+        var arcBody = d3.arc({
+            startAngle: 0,
+            endAngle: Math.PI / 2,
+            innerRadius: 90,
+            outerRadius: 100,
+            cornerRadius: 6
+        })
+
+        const svg = d3.select("#scale").append('svg')
+        .attr("viewBox", [-width / 2, -height/2, width, height])
+        .attr("width", width)
+        .attr("height", height)
+        
+        // 床身（管材）生成器
+        function Bed_Creator(){            
+            let _deviceBed = svg.append("g").append("rect")
+            let _deviceBedTop = svg.append("g").append("path")
+            let _deviceBedRight = svg.append("g").append("path")
+            return (data) => {
+                // _deviceBed.transition()
+                // .attr("x", -data.l / 2 + POS.y )
+                // .attr("y", -data.w / 2 )
+                // .attr("width", data.l)
+                // .attr("height", data.w)
+                // .attr("fill", data.color)                
+                
+                d = dataProcessing(data)
+                let _transformStr = "translate(" + (d.l / 2) + "," + (-d.w / 2 + d.depth/2) + ")"
+
+                _deviceBed
+                .transition()
+                .attr('x', -d.l)
+                .attr('y', 0)
+                .attr('width', d.l)
+                .attr('height', d.w)
+                .style('fill', '#97d5ad')
+                .attr("transform", _transformStr)
+                
+                _deviceBedTop
+                .transition()
+                .attr('d', "M0,0 L" + d.p1.x + "," + d.p1.y + " L" + d.p2.x + "," + d.p2.y + " L0," + d.w + " L0,0")
+                .style('fill', '#83d09e')
+                .attr("transform", _transformStr)
+                
+                _deviceBedRight
+                .transition()
+                .style('fill', '#8ac69f')
+                .attr("d", "M0,0 L" + d.p1.x + "," + d.p1.y + " L" + d.p3.x + "," + d.p3.y + " L" + (-d.l) + ",0 L0,0")
+                .attr("transform", _transformStr)
+            }
+        }
+
+        // 3D柱状图核心算法
+        // 此处需要以管材截面中心作为原点，得到其它点位置
+        function dataProcessing(d) {
+            //var angle = Math.PI / 2.3;
+            var angle = Math.PI / 4
+
+            d.pStart = {
+                x: 0,
+                y: 0
+            }
+            d.pEnd = {
+                x: 0,
+                y: 0
+            }
+
+            d.p1 = {
+                x: Math.cos(angle) + d.depth,
+                y: -Math.sin(angle) * d.w / 2
+            };
+            d.p2 = {                
+                x: d.p1.x,
+                y: d.p1.y + d.w
+            };
+            d.p3 = {
+                x: d.p1.x - d.l,
+                y: d.p1.y
+            };
+            return d
+        }
+
+        // 旋转矩阵计算
+        function rotate(pos, angle){
+            return {
+                x: pos.x * Math.cos(angle) - pos.y * Math.sin(angle),
+                y: pos.x * Math.sin(angle) + pos.y * Math.cos(angle)
+            }
+        }
+
+        let BED_DEVICE_FACTORY = Bed_Creator()
+        BED_DEVICE_FACTORY(deviceData.bed)
+        
+        // 卡盘生成器
+        function Chuck_Creator(){
+            let _chuck1 = svg.insert("g", ":first-child").selectAll("path")
+            let _chuck2 = svg.append("g").selectAll("path")
+            return (data) => {
+                _chuck1 = _chuck1.data(data).join("path")
+                _chuck1.transition()
+                .attr("transform", d => "translate(" + (d.x - deviceData.bed.l / 2 + 
+                (d.refAxis? POS[d.refAxis] : 0)) + ",0)")
+                .attr("y", 0 )
+                .attr("fill", d => d.color)
+                .attr('d', function(d){
+                    let _p = (d3.arc().innerRadius(d.innerRadius).outerRadius(d.outerRadius)
+                    .startAngle(0)
+                    .endAngle(-1 * Math.PI))()
+                    return _p
+                })
+
+                _chuck2 = _chuck2.data(data).join("path")
+                _chuck2.transition()
+                .attr("transform", d => "translate(" + (d.x - deviceData.bed.l / 2 + 
+                (d.refAxis? POS[d.refAxis] : 0)) + ",0)")
+                .attr("y", 0 )
+                .attr("fill", d => d.color)
+                .attr('d', function(d){
+                    let _p = (d3.arc().innerRadius(d.innerRadius).outerRadius(d.outerRadius)
+                    .startAngle(0)
+                    .endAngle(Math.PI))()
+                    return _p
+                })
+            }
+        }
+
+        let CHUCK_DEVICE_FACTORY = Chuck_Creator()
+        CHUCK_DEVICE_FACTORY(deviceData.chucks)
+
+        // 切割头生成器
+        function Cuthead_Creator(){
+            let deviceCutHead = svg.append("g").append("polygon")
+            return (data) => deviceCutHead.transition().attr("points", () => {
+                let _arr = [[-data.w, -data.h], 
+                [data.w, -data.h], 
+                [data.w, data.h - 20], 
+                [0, data.h], 
+                [-data.w, data.h - 20]]
+                return _arr.map(_itm => _itm.join(",")).join(" ")
+            })
+            .attr("fill", d => data.color)
+            .attr("transform", d => "translate(" + data.x + "," + (data.y - data.fh * 10 - POS.z) + ")")
+        }
+        let CUTHEAD_DEVICE_FACTORY = Cuthead_Creator()
+        CUTHEAD_DEVICE_FACTORY(deviceData.cutHead)        
+
+        // 管顶料生成器
+        function Pipe_Creator(){
+            let devicePipes = svg.append("g").selectAll("rect")
+            return (data) => {
+                devicePipes = devicePipes.data(data).join("rect")
+                devicePipes.transition().attr("x", d => d.x )
+                .attr("y", d => d.y + deviceData.bed.w / 2 + deviceData.bed.depth/2 + 1 )
+                .attr("width", d => d.w)
+                .attr("height", d => d.h)
+                .attr("fill", d => d.color)
+                .attr("transform", d => {
+                    let _angle = POS.y > d.area.min? 60 : 0
+                    return "rotate(" + _angle + ", " + (d.x + d.w / 2)  + "," + (d.y + deviceData.bed.w / 2 + 1 + d.h) + ")"
+                })
+            }
+        }
+        let PIPE_DEVICE_FACTORY = Pipe_Creator()
+        PIPE_DEVICE_FACTORY(deviceData.pipes)
+
+        // 卡盘前后运动 -- 动画效果
+        const transitionChuck = svg.transition()
+        .duration(4000)
+        .ease(d3.easeLinear)
+
+        let _count = 0
+        // let _timer = setInterval(()=>{      
+        //     POS.y = POS.y + 50      
+        //     POS.z = POS.z + 5
+        //     if(++_count > 4){
+        //         clearInterval(_timer)
+        //     }            
+        // }, 1000)
+    </script>
+
+    <style>
+        #scale{
+            margin: 40px;
+            padding: 40px;
+        }
+    </style>
+</body>
+</html>

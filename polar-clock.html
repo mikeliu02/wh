@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-scale.v2.min.js"></script>
+    <script src="https://d3js.org/d3-axis.v1.min.js"></script>
+</head>
+<body>
+    <div id="scale"></div>
+    <script>
+        var width = 480,
+            height = 400,
+            radius = Math.min(width, height) / 1.9,
+            spacing = .09;
+
+        var arcBody = d3.arc({
+            startAngle: 0,
+            endAngle: Math.PI / 2,
+            innerRadius: 90,
+            outerRadius: 100,
+            cornerRadius: 6
+        })
+
+        const svg = d3.select("#scale").append('svg')
+        .attr("viewBox", [-width / 2, -height/2, width, height])
+        .attr("width", width)
+        .attr("height", height)
+        // let max = d3.max(data)
+        // let y = d3.scaleLinear().domain([0, max]).range([0, 200])
+        // let colors = d3.interpolateRgb(
+        //     d3.rgb('#d6e685'),
+        //     d3.rgb('#1e6823'))
+
+        let pie = d3.pie()
+            .padAngle(0.005)
+            .sort(null)
+            .value(d => d.value)   
+        const data = [{
+            name: "type1", value: 20
+        }
+        ,{
+            name: "type2", value: 20
+        },{
+            name: "type3", value: 30
+        },{
+            name: "type4", value: 10
+        }
+        ]
+        let color = d3.scaleOrdinal()
+            .domain(data.map(d => d.name))
+            .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse())
+        let arc = (function(){
+            const radius = Math.min(width, height) / 2;
+            return d3.arc().innerRadius(radius * 0.8).outerRadius(radius - 1);
+        })()
+        const arcs = pie(data)
+        svg.selectAll('path')
+            .data(arcs)
+            .join('path')
+            .attr('fill', d => color(d.data.name))
+            .attr('d', arc)
+            .append("title")
+            .text(d => `${d.data.name}: ${d.data.value.toLocaleString()}`);
+    </script>
+
+    <style>
+        #scale{
+            margin: 40px;
+            padding: 40px;
+        }
+    </style>
+</body>
+</html>

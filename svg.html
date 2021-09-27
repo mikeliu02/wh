@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="scale">
+        <svg width="320px" height="170px" viewbox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="green_linear" x1="0%" y1="0%" x2="100%" y2="100%">
+                     <stop offset="0%" stop-color="#9CD84C"/>
+                     <stop offset="100%" stop-color="#0E9F6E"/>
+                </linearGradient>
+                <linearGradient id="red_linear" x1="0%" y1="0%" x2="100%" y2="100%">
+                     <stop offset="0%" stop-color="#f66499"/>
+                     <stop offset="100%" stop-color="#d6365b"/>
+                </linearGradient>
+                <linearGradient id="blue_linear" x1="0%" y1="0%" x2="100%" y2="100%">
+                     <stop offset="0%" stop-color="#377bf7"/>
+                     <stop offset="100%" stop-color="#1b3fda"/>
+                </linearGradient>
+                <linearGradient id="yellow_linear" x1="0%" y1="0%" x2="100%" y2="100%">
+                     <stop offset="0%" stop-color="#fcd72a"/>
+                     <stop offset="100%" stop-color="#f79a21"/>
+                </linearGradient>
+                <filter id="gaussian_blur" width="200%" x="-50%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10"></feGaussianBlur>
+                </filter>
+            </defs>
+            <image xlink:href="./img/画像图-底部.png" x="22.5" y="110" width="275" height="70"></image>
+            <rect fill="#ebebeb" filter="url(#gaussian_blur)" 
+             x="77.5" y="12" rx="20" ry="15" width="165" height="116"></rect>
+            <rect fill="url(#red_linear)" rx="20" ry="15" x="82.5" y="12" width="155" height="116"></rect>
+            <path d="M 172.5 128 L238 76 L238 113 A20 15 0 0 1 217.5 128 L238 128z" style="fill: #ebebeb;"></path>
+            <path d="M 147.5 128 L82 76 L82 113 A20 15 0 0 0 102.5 128 L82 128z" style="fill: #ebebeb;"></path>
+            <path d="M 172.5 12 L238 64 L238 27 A20 15 0 0 0 217.5 12 L238 12z" style="fill: #ebebeb;"></path>
+            <path d="M 147.5 12 L82 64 L82 27 A20 15 0 0 1 102.5 12 L82 12z" style="fill: #ebebeb;"></path>
+            <image xlink:href="./img/画像图-椭圆形.png" x="112" y="22" width="96" height="96"></image>
+            <text x="136" y="68" fill="#fff" style="font-size: 14px;font-weight: bold;">89.87%</text>
+            <text x="138" y="85" fill="#FFFFFF99" style="font-size: 12px;">质量得分</text>
+            <g>
+                <text x="18" y="28" fill="#0E9F6E" style="font-size: 14px;font-weight: bold;">89.87%</text>
+                <text x="13" y="45" fill="#8C8C8C" style="font-size: 12px;">调试在线率</text>
+                
+                <text x="252" y="28" fill="#0E9F6E" style="font-size: 14px;font-weight: bold;">89.87%</text>
+                <text x="247" y="45" fill="#8C8C8C" style="font-size: 12px;">能耗利用率</text>
+                
+                <text x="18" y="95" fill="#0E9F6E" style="font-size: 14px;font-weight: bold;">89.87%</text>
+                <text x="13" y="112" fill="#8C8C8C" style="font-size: 12px;">工艺合规率</text>
+                
+                <text x="252" y="95" fill="#0E9F6E" style="font-size: 14px;font-weight: bold;">89.87%</text>
+                <text x="247" y="112" fill="#8C8C8C" style="font-size: 12px;">调试自动化率</text>
+            </g>            
+        </svg>
+
+        <svg style="margin-left: 100px;" width="300px" height="200px" viewbox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+            <image xlink:href="./img/画像图-底部.png" x="12.5" y="140" width="275" height="70"></image>
+            <polygon stroke-linejoin="round" stroke-width="10" fill="url(#green_linear)" stroke="url(#green_linear)" points="87 153, 150 52, 213 153"></polygon>
+            <image xlink:href="./img/图标-白-正确.png" x="144" y="60"></image>
+            <image xlink:href="./img/图标-白-错误.png" x="96" y="140"></image>
+            <image xlink:href="./img/图标-白-感叹号.png" x="200" y="140"></image>
+            <text x="126" y="110" fill="#fff" style="font-size: 14px;font-weight: bold;">89.87%</text>
+            <text x="128" y="127" fill="#FFFFFF99" style="font-size: 12px;">质量得分</text> 
+            <g>
+                <text x="125" y="24" fill="#0E9F6E" style="font-size: 14px;font-weight: bold;">89.87%</text>
+                <text x="120" y="40" fill="#8C8C8C" style="font-size: 12px;">数据齐全率</text>
+                
+                <text x="225" y="125" fill="#0E9F6E" style="font-size: 14px;font-weight: bold;">89.87%</text>
+                <text x="220" y="142" fill="#8C8C8C" style="font-size: 12px;">数据准确率</text>
+                
+                <text x="25" y="125" fill="#0E9F6E" style="font-size: 14px;font-weight: bold;">89.87%</text>
+                <text x="20" y="142" fill="#8C8C8C" style="font-size: 12px;">工艺合规率</text>
+            </g>           
+        </svg>
+    </div>
+    <script>
+
+    </script>
+</body>
+</html>
